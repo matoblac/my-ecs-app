@@ -2,6 +2,10 @@
 
 A minimal Node.js app ready for AWS SDK, Express, and Docker.
 
+## Current Status
+
+[![E2E Tests](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml/badge.svg)](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml)
+
 ```bash
 git clone https://github.com/matoblac/my-ecs-app.git
 cd my-ecs-app
@@ -14,4 +18,4 @@ docker run -p 3000:3000 my-ecs-app
 ```
 
 ## includes tests for frontend and backend and github actions for e2e tests
-# Trigger CI workflow
+
