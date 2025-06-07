@@ -6,8 +6,11 @@
       "strict": true,
       "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true,
-      "skipLibCheck": true
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "skipLibCheck": true,
+      "types": ["jest", "node"]
     },
-    "include": ["src"]
+    "include": ["src", "tests"]
 }
   
