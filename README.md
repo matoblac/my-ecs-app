@@ -12,3 +12,5 @@ npm start
 docker build -t my-ecs-app .
 docker run -p 3000:3000 my-ecs-app
 ```
+
+## includes tests for frontend and backend and github actions for e2e tests
