@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "playwright": "^1.52.0",
+    "babel-jest": "^29.7.0"
+  },
+  "scripts": {
+    "test": "playwright test"
+  }
+}
