@@ -1,0 +1,12 @@
+# docker-compose.yml
+# For dev: spins up both containers and runs them locally
+# For prod: spins up both containers and runs them in ECS
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3000"
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"

@@ -1,12 +1,7 @@
 FROM node:20-slim
-
 WORKDIR /app
-
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install
-
 COPY . .
-
-RUN npm run build
-
+RUN npm run build    # <-- This creates /app/dist/index.js
 CMD ["node", "dist/index.js"]
