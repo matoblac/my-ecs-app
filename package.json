@@ -13,6 +13,7 @@
     "ts-jest": "^29.3.4"
   },
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:ci": "jest --ci --coverage --watchAll=false --passWithNoTests"
   }
 }
