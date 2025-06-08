@@ -31,4 +31,4 @@ includes tests for frontend and backend and github actions for e2e tests
 
 At the moment the app looks like this:
 
-![chat](/my-ecs-app/frontend/public/chat-home-page.png) 
+![chat](https://github.com/matoblac/my-ecs-app/blob/main/frontend/public/chat-home-page.png) 
