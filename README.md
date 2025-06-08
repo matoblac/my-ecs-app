@@ -25,3 +25,10 @@ includes tests for frontend and backend and github actions for e2e tests
 2. use scripts/push.sh to push the image to the ECR repo
 3. cdk deploy the application
 4. The deployment will create a new ECS cluster, a new ECR repo, and a new ECS service and pull the image from the ECR repo
+
+
+## Demo 
+
+At the moment the app looks like this:
+
+![chat](/my-ecs-app/frontend/public/chat-home-page.png) 

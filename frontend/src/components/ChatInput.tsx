@@ -22,7 +22,6 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
     }
   };
 
-  // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -32,10 +31,10 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
   }, [text]);
 
   return (
-    <div className="border-t border-[#565869] bg-[#343541]">
+    <div className="border-t border-[#565869] bg-[#343541] sticky bottom-0 z-20">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-3 bg-[#40414f] rounded-xl border border-[#565869] focus-within:border-[#10a37f] transition-colors duration-200">
+          <div className="flex items-end gap-3 bg-[#40414f] rounded-2xl border border-[#565869] focus-within:border-[#10a37f] shadow-lg transition-colors duration-200">
             <textarea
               ref={textareaRef}
               value={text}
@@ -45,17 +44,16 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
               className="flex-1 bg-transparent text-[#ececf1] placeholder-[#8e8ea0] border-0 outline-none resize-none px-4 py-3 min-h-[24px] max-h-[200px] leading-6"
               rows={1}
             />
-            
             <div className="flex items-center gap-2 pr-3 pb-3">
-              {/* Send Button */}
               <button
                 type="submit"
                 disabled={!text.trim()}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center shadow transition-all duration-200 ${
                   text.trim()
                     ? 'bg-[#10a37f] hover:bg-[#0d8f65] text-white'
                     : 'bg-[#565869] text-[#8e8ea0] cursor-not-allowed'
                 }`}
+                tabIndex={text.trim() ? 0 : -1}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 2L11 13"/>
@@ -64,8 +62,6 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
               </button>
             </div>
           </div>
-          
-          {/* Character count or helpful text */}
           <div className="text-xs text-[#8e8ea0] mt-2 text-center">
             Press Enter to send, Shift + Enter for new line
           </div>

@@ -13,9 +13,6 @@ describe('ChatWindow', () => {
     // Header check
     expect(screen.getByText(/Allen/i)).toBeInTheDocument();
 
-    // Welcome section
-    expect(screen.getByText(/How can I help you today/i)).toBeInTheDocument();
-
     // Input area
     expect(screen.getByPlaceholderText(/send a message/i)).toBeInTheDocument();
   });

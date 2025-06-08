@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-    <div className="flex h-screen">
+    <div className="flex h-screen w-screen">
       <Sidebar />
       <ChatWindow />
     </div>
