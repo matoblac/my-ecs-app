@@ -22,9 +22,10 @@ includes tests for frontend and backend and github actions for e2e tests
 
 ## Deployment 
 1. `aws configure` credentials
-2. use scripts/push.sh to push the image to the ECR repo
-3. cdk deploy the application
-4. The deployment will create a new ECS cluster, a new ECR repo, and a new ECS service and pull the image from the ECR repo
+2. create the ECR repositories: `./scripts/setup-ecr.sh`
+3. npm run build and cdk deploy the application
+4. deploy the frontend and backend: `./scripts/deploy-all.sh`
+5. The deployment will create a new ECS cluster, a new ECR repo, and a new ECS service and pull the image from the ECR repo
 
 
 ## Demo 

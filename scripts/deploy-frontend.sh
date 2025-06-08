@@ -1,17 +1,17 @@
 #!/bin/bash
-set -e
+# === FRONTEND DEPLOYMENT SCRIPT ===
+# File: deploy-frontend.sh
 
-# push the image to the ECR repo
-# this script is used to push the image to the ECR repo
+set -e
 
 # === Config ===
 AWS_REGION="us-east-1"
-REPO_NAME="my-ecs-app"       # Replace with your ECR repo name
+REPO_NAME="chatbot-frontend"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 IMAGE_TAG=$(git rev-parse --short HEAD)
 ECR_URI="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME"
 
-echo "📦 Building Docker image: $ECR_URI:$IMAGE_TAG"
+echo "📦 Building Frontend Docker image: $ECR_URI:$IMAGE_TAG"
 
 # === Authenticate ===
 aws ecr get-login-password --region "$AWS_REGION" \
@@ -25,7 +25,16 @@ docker tag "$ECR_URI:$IMAGE_TAG" "$ECR_URI:latest"
 docker push "$ECR_URI:$IMAGE_TAG"
 docker push "$ECR_URI:latest"
 
-echo "✅ Image pushed successfully:"
+echo "✅ Frontend image pushed successfully:"
 echo "   - $ECR_URI:$IMAGE_TAG"
 echo "   - $ECR_URI:latest"
 
+# === Force ECS Service Update ===
+echo "🔄 Updating ECS service..."
+aws ecs update-service \
+  --cluster chatbot-cluster \
+  --service chatbot-service \
+  --force-new-deployment \
+  --region "$AWS_REGION"
+
+echo "✅ ECS service update initiated"
