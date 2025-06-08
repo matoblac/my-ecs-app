@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Message from './Message';
 import ChatInput from './ChatInput';
 
@@ -61,8 +61,8 @@ const ChatWindow = () => {
       {/* Header */}
       <div className="bg-[#343541] border-b border-[#565869] px-4 py-3">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-lg font-semibold text-[#ececf1]">ChatGPT</h1>
-          <p className="text-sm text-[#8e8ea0]">Model: GPT-4</p>
+          <h1 className="text-lg font-semibold text-[#ececf1]">Allen</h1>
+          <p className="text-sm text-[#8e8ea0]">Model: Claude 4</p>
         </div>
       </div>
 

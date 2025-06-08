@@ -1,5 +1,3 @@
-import React from 'react';
-
 type Props = {
   role: 'user' | 'assistant';
   content: string;
@@ -16,7 +14,9 @@ const Message = ({ role, content }: Props) => {
               role === 'user' 
                 ? 'bg-[#10a37f] text-white' 
                 : 'bg-[#19c37d] text-white'
-            }`}>
+            }`}
+            data-testid={role === 'user' ? 'user-icon' : 'assistant-icon'}
+            >
               {role === 'user' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>

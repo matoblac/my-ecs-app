@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Sidebar = () => {
   return (
     <div className="w-64 bg-[#202123] border-r border-[#3d3d3d] h-full flex flex-col">
