@@ -9,7 +9,9 @@ src/domain/chat/Conversation.ts
 src/domain/chat/types.ts
 src/domain/chat/ChatRepository.ts
 src/domain/chat/Conversation.ts
-s
-
+src/domain/chat/ConversationRule.ts
+src/domain/chat/types.ts
+src/domain/chat/ChatRepository.ts
+src/domain/chat/Conversation.ts
 
 
