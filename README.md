@@ -2,6 +2,8 @@
 
 [![E2E Tests](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml/badge.svg)](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml)
 
+![chat](https://github.com/matoblac/my-ecs-app/blob/main/frontend/public/chat-home-page.png) 
+
 ## What is Allen.ai?
 
 Advanced AI chat application with a WebSocket-driven backend, vector-enabled knowledge base, and real-time Bedrock inference through AWS-managed infrastructure.
@@ -70,12 +72,6 @@ Previous relevant discussions:
 - **Contextual Understanding**: Enhances response accuracy by leveraging relevant historical context
 - **Data Retention**: Reduces the need to store potentially sensitive information
 
+## Development
 
 *This document is intended for business and engineering leadership. For detailed system structure, database schemas, and deployment scripts, refer to* [development.md](./docs/development.md)
-
-
-## Demo 
-
-At the moment the app looks like this:
-
-![chat](https://github.com/matoblac/my-ecs-app/blob/main/frontend/public/chat-home-page.png) 

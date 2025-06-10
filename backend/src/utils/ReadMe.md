@@ -3,7 +3,11 @@
 ## Error Handling & Logging
 
 ## Logging
-pino?
+
+To the console. as seen in the /backend/src/utils/logger.ts file.
+```typescript
+console.log(`[INFO] ${msg}`, meta || "");
+```
 
 ## Error Handling
 
