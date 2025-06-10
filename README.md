@@ -1,31 +1,77 @@
-# my-ecs-app
-
-A minimal Node.js app ready for AWS SDK, Express, and Docker.
-
-## Current Status
+# Allen.ai
 
 [![E2E Tests](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml/badge.svg)](https://github.com/matoblac/my-ecs-app/actions/workflows/playwright.yml)
 
+## What is Allen.ai?
+
+Advanced AI chat application with a WebSocket-driven backend, vector-enabled knowledge base, and real-time Bedrock inference through AWS-managed infrastructure.
+
+## How does it work?
+
+Combining a WebSocket-driven backend, a vector-enabled knowledge base, and real-time Bedrock inference through AWS-managed infrastructure. The system supports intelligent, context-aware conversations that evolve with memory and structure.
+
+## TL;DR(What It Does)
+
+Copy and paste the following into [Mermaid Live Editor](https://mermaid.live/) to see the system in action:
+
+```code
+graph TD
+  A[User Message] --> B[WebSocket Gateway]
+  B --> C[Save Message in Aurora (with embedding)]
+  C --> D[Query Vector Similarity from Aurora]
+  C --> E[Fetch Recent Chat History]
+  D --> F[Build Smart Context]
+  E --> F
+  F --> G[Call Amazon Bedrock with Enriched Prompt]
+  G --> H[Save AI Response to Aurora]
+  H --> I[Stream Response via WebSocket]
+```
+## System Requirements
+
+TLDR: based on the following requirements **This system will learn more the more it's used automatically**
+
+- WebSocket-driven backend
+- Message Persistence using [Aurora PostgreSQL (with pgvector)](https://aws.amazon.com/blogs/machine-learning/dive-deep-into-vector-data-stores-using-amazon-bedrock-knowledge-bases/)
+- Vector Search for context-aware responses
+- Real-time Bedrock inference
+- Context-aware conversations that evolve with memory and structure
+- User authentication and authorization
+- Team collaboration features
+- Knowledge base integration
+
+### Privacy Concerns When Deploying at Team or Organization Level
+
+As mentioned above, This system automatically learns from user conversations by persisting chat history and embeddings into Aurora. If deployed at a team or organization level, messages shared in chat may be visible or influence responses for other users. The ability to influcence response is a feature not a bug, we want to able share expert verify knowledge which may be kept and utilized for years.
+
+> Warning: If a user shares sensitive or inappropriate content, it may be retained and surfaced in future team queries. While we may support message deletion in the future, it is non-trivial to enforce forgetting once data has been embedded or used in downstream prompts.
+
+#### Mitigation Strategy: Privacy-Preserving RAG
+
 ```bash
-git clone https://github.com/matoblac/my-ecs-app.git
-cd my-ecs-app
-npm install
-npm run build
-npm start
-# or for Docker:
-docker build -t my-ecs-app .
-docker run -p 3000:3000 my-ecs-app
+-- Instead of storing:
+"John from Engineering asked about AWS deployment and solved it with..."
+-- Store:
+"user_7a3f9d2b asked about AWS deployment and solved it with..."
 ```
 
-## Testing 
-includes tests for frontend and backend and github actions for e2e tests
+##### AI Context Building:
 
-## Deployment 
-1. `aws configure` credentials
-2. create the ECR repositories: `./scripts/setup-ecr.sh`
-3. npm run build and cdk deploy the application
-4. deploy the frontend and backend: `./scripts/deploy-all.sh`
-5. The deployment will create a new ECS cluster, a new ECR repo, and a new ECS service and pull the image from the ECR repo
+```bash
+const context = `
+Previous relevant discussions:
+- user_7a3f9d2b worked on AWS deployment using ECS
+- user_2m8k5n9x solved database scaling with Aurora
+- user_9p2l4r7t optimized React performance with lazy loading
+`;
+```
+##### Benefits:
+
+- **Anonymization**: Reduces the risk of sensitive data exposure
+- **Contextual Understanding**: Enhances response accuracy by leveraging relevant historical context
+- **Data Retention**: Reduces the need to store potentially sensitive information
+
+
+*This document is intended for business and engineering leadership. For detailed system structure, database schemas, and deployment scripts, refer to* 
 
 
 ## Demo 
