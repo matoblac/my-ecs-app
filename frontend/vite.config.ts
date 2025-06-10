@@ -1,9 +1,13 @@
+// vite.config.js or vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  build: {
-    outDir: 'dist', // this is default, but ensure it's explicitly set
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'), // <-- This line tells Vite what '@' means
+    },
   },
 })

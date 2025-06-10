@@ -1,17 +1,21 @@
+// App.tsx
 import './App.css'
-import Sidebar from './components/Sidebar'
-import ChatWindow from './components/ChatWindow'
+import { Chat } from './pages/chat/chat'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext'
 
 function App() {
-
   return (
-    <>
-    <div className="flex h-screen w-screen">
-      <Sidebar />
-      <ChatWindow />
-    </div>
-    </>
+    <ThemeProvider>
+      <Router>
+        <div className="w-full h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+          <Routes>
+            <Route path="/" element={<Chat />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
   )
 }
 
-export default App
+export default App;

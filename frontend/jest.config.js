@@ -3,7 +3,6 @@ export default {
   preset: 'ts-jest/presets/default-esm',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
@@ -13,6 +12,9 @@ export default {
       tsconfig: 'tsconfig.test.json'
     }],
   },
-  testMatch: ['<rootDir>/tests/**/*.(test|spec).(ts|tsx)'],
+  testMatch: ['<rootDir>/tests/**/*.(test|spec).(ts|tsx)',
+    '<rootDir>/__tests__/**/*.(test|spec).(ts|tsx)'
+  ],
+
 };
   
