@@ -1,9 +1,12 @@
-// src/tests/unit/ConversationRules.test.ts
+// tests/unit/ConversationRules.test.ts
+// @ts-nocheck
 
 import { canUserSendMessage, canUserAddParticipant } from '../../src/domain/chat/ConversationRule'
 import { Conversation } from '../../src/domain/chat/Conversation'
 import { ChatParticipant } from '../../src/domain/chat/ChatParticipant'
 import { UserId, ConversationId } from '../../src/domain/chat/types'
+
+
 
 describe('ConversationRules', () => {
   const user1: UserId = 'user-1'
