@@ -10,7 +10,7 @@ Advanced AI chat application with a WebSocket-driven backend, vector-enabled kno
 
 Combining a WebSocket-driven backend, a vector-enabled knowledge base, and real-time Bedrock inference through AWS-managed infrastructure. The system supports intelligent, context-aware conversations that evolve with memory and structure.
 
-## TL;DR(What It Does)
+### TL;DR(What It Does)
 
 Copy and paste the following into [Mermaid Live Editor](https://mermaid.live/) to see the system in action:
 
@@ -41,7 +41,7 @@ TLDR: based on the following requirements **This system will learn more the more
 
 ### Privacy Concerns When Deploying at Team or Organization Level
 
-As mentioned above, This system automatically learns from user conversations by persisting chat history and embeddings into Aurora. If deployed at a team or organization level, messages shared in chat may be visible or influence responses for other users. The ability to influcence response is a feature not a bug, we want to able share expert verify knowledge which may be kept and utilized for years.
+As mentioned above, This system automatically learns from user conversations by persisting chat history and embeddings into Aurora. If deployed at a team or organization level, messages shared in chat may be visible or influence responses for other users. The ability to influcence response is a feature not a bug, we want to be able to share expert verified knowledge which may be kept and utilized for many years w/ evolving context.
 
 > Warning: If a user shares sensitive or inappropriate content, it may be retained and surfaced in future team queries. While we may support message deletion in the future, it is non-trivial to enforce forgetting once data has been embedded or used in downstream prompts.
 
@@ -71,7 +71,7 @@ Previous relevant discussions:
 - **Data Retention**: Reduces the need to store potentially sensitive information
 
 
-*This document is intended for business and engineering leadership. For detailed system structure, database schemas, and deployment scripts, refer to* 
+*This document is intended for business and engineering leadership. For detailed system structure, database schemas, and deployment scripts, refer to* [development.md](./docs/development.md)
 
 
 ## Demo 
