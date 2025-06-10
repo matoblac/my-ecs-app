@@ -1,4 +1,4 @@
-import { StubEmbeddingService } from "../../../../../src/domain/ai/EmbeddingService"
+import { StubEmbeddingService } from "../../../../src/domain/ai/EmbeddingService"
 
 // Test the EmbeddingService class and its implementation
 

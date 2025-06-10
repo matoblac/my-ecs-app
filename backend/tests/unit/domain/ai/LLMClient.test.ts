@@ -1,4 +1,4 @@
-import { StubLLMClient } from "../../../../../src/domain/ai/LLMClient"
+import { StubLLMClient } from "../../../../src/domain/ai/LLMClient"
 // @ts-nocheck
 
 // Test the LLMClient interface and its implementation

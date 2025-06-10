@@ -1,4 +1,4 @@
-import { PromptContextBuilder } from "../../../../../src/domain/ai/PromptContextBuilder"
+import { PromptContextBuilder } from "../../../../src/domain/ai/PromptContextBuilder"
 
 // @ts-nocheck
 

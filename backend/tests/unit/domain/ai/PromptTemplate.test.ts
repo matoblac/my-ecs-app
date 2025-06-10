@@ -1,4 +1,5 @@
-import { basePromptTemplate } from "../../../../../src/domain/ai/PromptTemplate"
+import { basePromptTemplate } from "../../../../src/domain/ai/PromptTemplate"
+
 
 describe("PromptTemplate", () => {
   it("formats prompt with context and message", () => {
