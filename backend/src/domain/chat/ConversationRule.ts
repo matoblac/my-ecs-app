@@ -1,6 +1,6 @@
-import { Conversation } from './Conversation'
-import { UserId } from './types'
-import { ChatParticipant } from './ChatParticipant'
+import { Conversation } from "./Conversation";
+import { UserId } from "./types";
+import { ChatParticipant } from "./ChatParticipant";
 
 // Returns true if the user is a participant in the conversation
 // This is a domain rule, so it is immutable
