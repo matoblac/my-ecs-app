@@ -1,0 +1,14 @@
+import { ConversationId } from './types'
+import { ChatParticipant } from './ChatParticipant'
+
+// Purpose: Defines the structure of a conversation
+// This is a value object, so it is immutable
+// It is used to store the conversation history
+// It is used to store the conversation history
+
+export interface Conversation {
+  id: ConversationId
+  title?: string
+  createdAt: Date
+  participants: ChatParticipant[]
+}

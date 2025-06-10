@@ -2,5 +2,5 @@ import { test, expect } from '@playwright/test';
 
 test('home page loads', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/My App/i); // adjust based on your app
+  await expect(page.locator('body')).toContainText('Allen.ai');
 });
