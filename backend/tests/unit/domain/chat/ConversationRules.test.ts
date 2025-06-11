@@ -1,10 +1,10 @@
 // tests/unit/domain/chat/ConversationRules.test.ts
 // @ts-nocheck
 
-import { canUserSendMessage, canUserAddParticipant } from '../../../../../src/domain/chat/ConversationRule'
-import { Conversation } from '../../../../../src/domain/chat/Conversation'
-import { ChatParticipant } from '../../../../../src/domain/chat/ChatParticipant'
-import { UserId, ConversationId } from '../../../../../src/domain/chat/types'
+import { canUserSendMessage, canUserAddParticipant } from '../../../../src/domain/chat/ConversationRule'
+import { Conversation } from '../../../../src/domain/chat/Conversation'
+import { ChatParticipant } from '../../../../src/domain/chat/ChatParticipant'
+import { UserId, ConversationId } from '../../../../src/domain/chat/types'
 
 
 

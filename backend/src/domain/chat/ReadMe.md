@@ -1,4 +1,4 @@
-# MY ECS APP Backend Domain Layer: Chat Module
+# Allen.ai Backend Domain Layer: Chat Module
 
 ## TL;DR
 

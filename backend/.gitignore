@@ -2,16 +2,4 @@ node_modules
 dist
 npm-debug.log
 .env
-src/domain/chat/ChatMessage.ts
-src/domain/chat/ChatParticipant.ts
-src/domain/chat/ChatPermissions.ts
-src/domain/chat/Conversation.ts
-src/domain/chat/types.ts
-src/domain/chat/ChatRepository.ts
-src/domain/chat/Conversation.ts
-src/domain/chat/ConversationRule.ts
-src/domain/chat/types.ts
-src/domain/chat/ChatRepository.ts
-src/domain/chat/Conversation.ts
-
 
