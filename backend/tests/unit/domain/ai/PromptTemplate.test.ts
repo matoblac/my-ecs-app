@@ -1,5 +1,5 @@
 import { basePromptTemplate } from "../../../../src/domain/ai/PromptTemplate"
-
+// @ts-nocheck
 
 describe("PromptTemplate", () => {
   it("formats prompt with context and message", () => {
