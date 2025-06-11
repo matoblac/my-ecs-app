@@ -43,7 +43,7 @@ TLDR: based on the following requirements **This system will learn more the more
 
 ### Privacy Concerns When Deploying at Team or Organization Level
 
-As mentioned above, This system automatically learns from user conversations by persisting chat history and embeddings into Aurora. If deployed at a team or organization level, messages shared in chat may be visible or influence responses for other users. The ability to influcence response is a feature not a bug, we want to be able to share expert verified knowledge which may be kept and utilized for many years w/ evolving context.
+As mentioned above, This system automatically learns from user conversations by persisting chat history and embeddings into Aurora. If deployed at a team or organization level, messages shared in chat may be visible or influence responses for other users. For past usage to influence future responses is a feature not a bug, we want to be able to share expert verified knowledge which may be kept and utilized for many years w/ evolving context.
 
 > Warning: If a user shares sensitive or inappropriate content, it may be retained and surfaced in future team queries. While we may support message deletion in the future, it is non-trivial to enforce forgetting once data has been embedded or used in downstream prompts.
 
