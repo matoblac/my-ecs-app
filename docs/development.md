@@ -12,7 +12,7 @@ The project encompasses:
 
 - [Frontend](../frontend/ReadMe.md)
 - [Backend](../backend/ReadMe.md)
-- [Infrastructure](../infrastructure/ReadMe.md)
+- [Infrastructure](../backend/src/infrastructure/ReadMe.md)
 
 ## Local Development
 
