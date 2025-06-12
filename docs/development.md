@@ -8,6 +8,8 @@ The project encompasses:
 
 - Infrastructure: AWS CDK for provisioning Aurora PostgreSQL (with pgvector), ECS, IAM, Secrets Manager, and Bedrock Agent integration
 
+* Small note: I reference allenAi as Allenai or Allen but, these teams can be used interchangeably.
+
 ## Components ReadMe
 
 - [Frontend](../frontend/README.md)
