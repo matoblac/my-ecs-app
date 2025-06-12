@@ -9,10 +9,10 @@ Utilizes the concept of Domain Driven Design (DDD) to organize the code.
 ## Core Components
 
 * Domain Layer:
-    * User
-    * Chat
-    * AI
-    * Team
+    * [User](./src/domain/user/ReadMe.md)
+    * [Chat](./src/domain/chat/ReadMe.md)
+    * [AI](./src/domain/ai/ReadMe.md)
+    * [Team](./src/domain/team/ReadMe.md)
     * Notification
     * Settings
 
