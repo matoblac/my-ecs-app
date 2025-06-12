@@ -10,7 +10,7 @@ The project encompasses:
 
 ## Components ReadMe
 
-- [Frontend](../frontend/ReadMe.md)
+- [Frontend](../frontend/README.md)
 - [Backend](../backend/ReadMe.md)
 - [Infrastructure](../backend/src/infrastructure/ReadMe.md)
 
