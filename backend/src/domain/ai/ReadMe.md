@@ -1,12 +1,5 @@
 # MY ECS APP Backend Domain Layer: AI Module
 
-## TL;DR
-
-* **The domain layer defines the rules, data structures, and contracts for your app.**
-* **It is pure TypeScript, independent of any backend tech.**
-* **Entities = main objects, Value Objects = small immutable types, Repositories = interfaces for data access, Domain Services = core business rules.**
-* **Build this first for long-term flexibility and clean, testable code.**
-
 ---
 
 ## Structure for `/src/domain/ai`
@@ -81,3 +74,10 @@ webSocket.on("userMessage", async (chatId, userId, message) => {
     - ChatRepository: handles all interaction with the chat repository (real or simulated)
     - ChatMessage: the message from the user
     - ChatParticipant: the participant in the chat(user,role,etc.)
+
+*Domain/team layer: `This is where the team context is injected into the AI context.`
+
+    - Team: the team from the user
+    - TeamRepository: the repository for the team
+    - TeamService: the service for the team
+    - TeamContextPolicy: the policy for the team

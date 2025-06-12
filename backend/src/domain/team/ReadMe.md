@@ -1,5 +1,7 @@
 # Why do you care about teams?
 
+TODO make the style of this readme more consistent with the other readmes
+
 This architecture is meant support both solo users and teams, depending on user joins a team or not.
 
 *Note: this system isn't meant to both start a private user and then join a team later vise versa because, they aurora tables are not designed to support this(perhaps? Need to confirm TODO)
@@ -24,7 +26,7 @@ This architecture is meant support both solo users and teams, depending on user 
     * Responses are smarter and more collective
     * Great for org-wide assistants (like Slackbot or company-wide Claude)
 
-## User is not in a team features
+## User IS NOT in a team features
 
 * Solo / Anonymous Mode, consider this can be a feature flag OR a separate user type
 * Each user gets isolated context

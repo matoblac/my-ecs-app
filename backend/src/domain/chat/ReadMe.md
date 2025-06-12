@@ -1,19 +1,29 @@
 # Allen.ai Backend Domain Layer: Chat Module
 
-## TL;DR
+## Example File Structure
 
-* **The domain layer defines the rules, data structures, and contracts for your app.**
-* **It is pure TypeScript, independent of any backend tech.**
-* **Entities = main objects, Value Objects = small immutable types, Repositories = interfaces for data access, Domain Services = core business rules.**
-* **Build this first for long-term flexibility and clean, testable code.**
+```
+src/domain/chat/
+├── ChatMessage.ts
+├── Conversation.ts
+├── ChatParticipant.ts
+├── types.ts
+├── ChatRepository.ts
+└── ChatPermissions.ts
+```
+
 
 ---
 
-## Domain Layer
+# Description
 
 This document explains the design of the **domain layer** for the chat system
 The domain layer represents the “core logic” and business rules of the chat system, independent of frameworks, storage, or infrastructure.
-All other layers (APIs, databases, AI integrations) depend on this, but this layer is pure TypeScript and is not coupled to any technology decisions.
+All other objects (APIs, databases, AI integrations) depend on this domain layer. If you had to port the app to a new stack or framework, you’d re-use this code with minimal changes.
+
+## Reasoning 
+
+If you think about it, without chat it would just be a frontend application that doesn't do anything so every interaction with allen is a chat.
 
 ---
 
@@ -25,14 +35,13 @@ All other layers (APIs, databases, AI integrations) depend on this, but this lay
   * Data structures (value objects)
   * Business rules (domain services)
   * Abstract contracts for data access (repository interfaces)
+
 * **The domain does NOT define**:
 
   * How data is stored (no SQL or ORM code)
   * How data is sent over the network (no HTTP/WebSocket code)
   * Any AWS, Postgres, or framework-specific code
 
-The domain is the *brain* of your backend.
-If you had to port the app to a new stack or framework, you’d re-use this code with minimal changes.
 
 ---
 
@@ -100,18 +109,4 @@ Domain services encapsulate business rules or logic that span across entities.
   * `canUserSendMessage(conversation, userId)`: Returns true if the user is a participant.
 
 More advanced rules (like team-based access or message deletion permissions) can be added here.
-
----
-
-## Example File Structure
-
-```
-src/domain/chat/
-├── ChatMessage.ts
-├── Conversation.ts
-├── ChatParticipant.ts
-├── types.ts
-├── ChatRepository.ts
-└── ChatPermissions.ts
-```
 

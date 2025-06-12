@@ -11,14 +11,18 @@
 ├── User.ts
 ├── UserRepository.ts
 ├── UserService.ts
-├── UserController.ts
-├── UserRouter.ts
-├── UserRoutes.ts
+|-- UserSettings.ts
+|-- ShareContext.ts
+|-- UserAudit.ts
+|-- UserNotification.ts
 ```
 Cognito handles auth but, this domain still owns how the app uses that identity.
 
-## How This Domain Works With Other Domains
+## How Does This Domain Work With Other Domains
 
 - Chat: Filters what conversations a user can see based on their team membership.
 - AI: Decides whether to use AI based on user settings.
-- Privacy: Pseudonymizes user IDs for privacy.
+- Team: Handles user team membership and permissions.
+- Settings: Handles user settings and preferences.
+- Notifications: Handles user notifications.
+- Audit: Handles audit mechnismes with superuser access.
