@@ -47,7 +47,7 @@ As mentioned above, This system automatically learns from user conversations by 
 
 > Warning: If a user shares sensitive or inappropriate content, it may be retained and surfaced in future team queries. While we may support message deletion in the future, it is non-trivial to enforce forgetting once data has been embedded or used in downstream prompts.
 
-* The above warning can be mitigated but, IF NOT migigated in time the damage is related to reputation and trust.
+* The above warning can be mitigated or accepted but, IF NOT mitigated in time the damage is related to reputation and trust.
 * Please see [prompt_injection_poisoning.md](./docs/prompt_injection_poisoning.md) for more details. 
 
 #### Mitigation Strategy: Privacy-Preserving RAG
