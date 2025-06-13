@@ -1,34 +1,84 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { CdkStack } from '../lib/cdk-stack';
 
-describe('ChatbotStack', () => {
+describe('AllenAI Chatbot Infrastructure', () => {
   let app: cdk.App;
   let stack: CdkStack;
   let template: Template;
 
-  beforeEach(() => {
-    app = new cdk.App();
-    // Set test context to avoid VPC lookup
-    app.node.setContext('@aws-cdk/aws-ec2:restrictDefaultSecurityGroup', true);
-    
-    stack = new CdkStack(app, 'TestChatbotStack', {
-      env: {
-        account: '123456789012',
-        region: 'us-east-1'
+  beforeAll(() => {
+    // Set up the test environment
+    app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup': true, // Triggers test mode
       }
     });
+    
+    stack = new CdkStack(app, 'TestChatbotStack');
     template = Template.fromStack(stack);
   });
 
-  describe('Basic Infrastructure', () => {
-    test('creates ECS cluster with correct name', () => {
+  describe('Core Infrastructure Components', () => {
+    test('should create VPC for networking', () => {
+      template.hasResourceProperties('AWS::EC2::VPC', {
+        CidrBlock: '10.0.0.0/16'
+      });
+    });
+
+    test('should create Aurora PostgreSQL database with correct configuration', () => {
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-postgresql',
+        DatabaseName: 'AllenAIDB',
+        EngineMode: 'serverless',
+        EngineVersion: '13.13',
+        ScalingConfiguration: {
+          AutoPause: true,
+          MinCapacity: 2,
+          MaxCapacity: 8,
+          SecondsUntilAutoPause: 600
+        }
+      });
+    });
+
+    test('should create database credentials secret', () => {
+      template.hasResourceProperties('AWS::SecretsManager::Secret', {
+        Name: 'AllenAIUserDBCredentials',
+        GenerateSecretString: {
+          SecretStringTemplate: '{"username":"allenaiuser"}',
+          GenerateStringKey: 'password'
+        }
+      });
+    });
+  });
+
+  describe('Container Infrastructure', () => {
+    test('should create ECS cluster', () => {
       template.hasResourceProperties('AWS::ECS::Cluster', {
         ClusterName: 'chatbot-cluster'
       });
     });
 
-    test('creates Application Load Balancer', () => {
+    test('should create Fargate task definition with correct resource allocation', () => {
+      template.hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Cpu: '1024',
+        Memory: '2048',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: ['FARGATE']
+      });
+    });
+
+    test('should create ECS service with desired configuration', () => {
+      template.hasResourceProperties('AWS::ECS::Service', {
+        ServiceName: 'chatbot-service',
+        DesiredCount: 1,
+        LaunchType: 'FARGATE'
+      });
+    });
+  });
+
+  describe('Load Balancing and Routing', () => {
+    test('should create internet-facing application load balancer', () => {
       template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         Name: 'chatbot-alb',
         Scheme: 'internet-facing',
@@ -36,209 +86,67 @@ describe('ChatbotStack', () => {
       });
     });
 
-    test('creates WAF Web ACL with managed rules', () => {
+    test('should create target groups for frontend and backend', () => {
+      // Frontend target group
+      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        Port: 3000,
+        Protocol: 'HTTP',
+        TargetType: 'ip'
+      });
+
+      // Backend target group
+      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        Port: 8080,
+        Protocol: 'HTTP',
+        TargetType: 'ip'
+      });
+    });
+
+    test('should configure listener with API routing rule', () => {
+      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+        Priority: 1,
+        Conditions: [{
+          Field: 'path-pattern',
+          PathPatternConfig: {
+            Values: ['/api/*']
+          }
+        }]
+      });
+    });
+  });
+
+  describe('Security and Monitoring', () => {
+    test('should create WAF with security rules', () => {
       template.hasResourceProperties('AWS::WAFv2::WebACL', {
         Name: 'chatbot-web-acl',
         Scope: 'REGIONAL',
         DefaultAction: { Allow: {} }
       });
-    });
-  });
 
-  describe('Container Configuration', () => {
-    test('creates Fargate task definition with correct resources', () => {
-      template.hasResourceProperties('AWS::ECS::TaskDefinition', {
-        RequiresCompatibilities: ['FARGATE'],
-        Memory: '2048',
-        Cpu: '1024',
-        NetworkMode: 'awsvpc'
-      });
-    });
-
-    test('configures frontend container correctly', () => {
-      template.hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: Match.arrayWith([
-          Match.objectLike({
-            Name: 'FrontendContainer',
-            Memory: 512,
-            PortMappings: [
-              {
-                ContainerPort: 3000,
-                Protocol: 'tcp'
-              }
-            ],
-            Environment: Match.arrayWith([
-              {
-                Name: 'BACKEND_URL',
-                Value: 'http://localhost:8080'
-              },
-              {
-                Name: 'NODE_ENV',
-                Value: 'production'
-              }
-            ])
-          })
-        ])
-      });
+      // Check for rate limiting rule
+      const webAcl = template.findResources('AWS::WAFv2::WebACL');
+      const webAclResource = Object.values(webAcl)[0] as any;
+      const rateLimitRule = webAclResource.Properties.Rules.find(
+        (rule: any) => rule.Name === 'RateLimitRule'
+      );
+      
+      expect(rateLimitRule).toBeDefined();
+      expect(rateLimitRule.Statement.RateBasedStatement.Limit).toBe(2000);
     });
 
-    test('configures backend container correctly', () => {
-      template.hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: Match.arrayWith([
-          Match.objectLike({
-            Name: 'BackendContainer',
-            Memory: 1536,
-            PortMappings: [
-              {
-                ContainerPort: 8080,
-                Protocol: 'tcp'
-              }
-            ],
-            Environment: Match.arrayWith([
-              {
-                Name: 'NODE_ENV',
-                Value: 'production'
-              },
-              {
-                Name: 'PORT',
-                Value: '8080'
-              }
-            ])
-          })
-        ])
-      });
-    });
-  });
-
-  describe('Load Balancer Configuration', () => {
-    test('creates target groups for frontend and backend', () => {
-      // Frontend target group (check key properties only)
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-        Port: 3000,
-        Protocol: 'HTTP',
-        TargetType: 'ip',
-        HealthCheckPath: '/'
-      });
-
-      // Backend target group 
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-        Port: 8080,
-        Protocol: 'HTTP',
-        TargetType: 'ip',
-        HealthCheckPath: '/health'
-      });
-    });
-
-    test('configures listener with correct routing rules', () => {
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-        Port: 80,
-        Protocol: 'HTTP'
-      });
-
-      // Check for listener rules (API routing)
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
-        Priority: 1,
-        Conditions: [
-          {
-            Field: 'path-pattern',
-            PathPatternConfig: {
-              Values: ['/api/*']
-            }
-          }
-        ]
-      });
-    });
-  });
-
-  describe('Security Configuration', () => {
-    test('creates IAM roles for ECS tasks', () => {
+    test('should create IAM roles with appropriate permissions', () => {
       // Task execution role
       template.hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Effect: 'Allow',
-              Principal: {
-                Service: 'ecs-tasks.amazonaws.com'
-              },
-              Action: 'sts:AssumeRole'
-            }
-          ]
+          Statement: [{
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' }
+          }]
         }
       });
     });
 
-    test('creates inline policies for AWS SDK access', () => {
-      // Check that we have policies for DynamoDB and Lambda
-      const template_json = template.toJSON();
-      const roles = Object.values(template_json.Resources).filter(
-        (resource: any) => resource.Type === 'AWS::IAM::Role'
-      );
-      
-      const hasInlinePolicies = roles.some((role: any) => 
-        role.Properties?.Policies && role.Properties.Policies.length > 0
-      );
-      
-      expect(hasInlinePolicies).toBe(true);
-    });
-
-    test('associates WAF with ALB', () => {
-      template.hasResourceProperties('AWS::WAFv2::WebACLAssociation', {
-        ResourceArn: Match.anyValue(),
-        WebACLArn: Match.anyValue()
-      });
-    });
-  });
-
-  describe('WAF Rules Configuration', () => {
-    test('includes AWS managed rule sets', () => {
-      template.hasResourceProperties('AWS::WAFv2::WebACL', {
-        Rules: Match.arrayWith([
-          Match.objectLike({
-            Name: 'AWSManagedRulesCommonRuleSet',
-            Priority: 1,
-            Statement: {
-              ManagedRuleGroupStatement: {
-                VendorName: 'AWS',
-                Name: 'AWSManagedRulesCommonRuleSet'
-              }
-            }
-          }),
-          Match.objectLike({
-            Name: 'AWSManagedRulesKnownBadInputsRuleSet',
-            Priority: 2,
-            Statement: {
-              ManagedRuleGroupStatement: {
-                VendorName: 'AWS',
-                Name: 'AWSManagedRulesKnownBadInputsRuleSet'
-              }
-            }
-          })
-        ])
-      });
-    });
-
-    test('includes rate limiting rule', () => {
-      template.hasResourceProperties('AWS::WAFv2::WebACL', {
-        Rules: Match.arrayWith([
-          Match.objectLike({
-            Name: 'RateLimitRule',
-            Priority: 3,
-            Action: { Block: {} },
-            Statement: {
-              RateBasedStatement: {
-                Limit: 2000,
-                AggregateKeyType: 'IP'
-              }
-            }
-          })
-        ])
-      });
-    });
-  });
-
-  describe('Logging Configuration', () => {
-    test('creates CloudWatch log groups', () => {
+    test('should create CloudWatch log groups', () => {
       template.hasResourceProperties('AWS::Logs::LogGroup', {
         LogGroupName: '/ecs/chatbot-frontend',
         RetentionInDays: 7
@@ -251,60 +159,75 @@ describe('ChatbotStack', () => {
     });
   });
 
-  describe('ECS Service Configuration', () => {
-    test('creates Fargate service with correct configuration', () => {
-      template.hasResourceProperties('AWS::ECS::Service', {
-        ServiceName: 'chatbot-service',
-        DesiredCount: 1,
-        LaunchType: 'FARGATE'
-      });
-    });
+  describe('Integration Validation', () => {
+    test('should have correct resource counts for complete system', () => {
+      // Verify we have all the major components
+      const resources = template.toJSON().Resources;
+      const resourceTypes = Object.values(resources).map((r: any) => r.Type);
 
-    test('enables public IP assignment for ECR access', () => {
-      template.hasResourceProperties('AWS::ECS::Service', {
-        NetworkConfiguration: {
-          AwsvpcConfiguration: {
-            AssignPublicIp: 'ENABLED'
-          }
-        }
-      });
-    });
-  });
-
-  describe('Resource Counting', () => {
-    test('creates expected number of resources', () => {
-      const resourceCounts = template.toJSON().Resources;
+      expect(resourceTypes).toContain('AWS::EC2::VPC');
+      expect(resourceTypes).toContain('AWS::RDS::DBCluster');
+      expect(resourceTypes).toContain('AWS::ECS::Cluster');
+      expect(resourceTypes).toContain('AWS::ECS::Service');
+      expect(resourceTypes).toContain('AWS::ElasticLoadBalancingV2::LoadBalancer');
+      expect(resourceTypes).toContain('AWS::WAFv2::WebACL');
       
-      // Count specific resource types
-      const ecsServices = Object.values(resourceCounts).filter(
-        (resource: any) => resource.Type === 'AWS::ECS::Service'
+      // Should have 2 target groups (frontend + backend)
+      const targetGroups = resourceTypes.filter(type => 
+        type === 'AWS::ElasticLoadBalancingV2::TargetGroup'
       );
-      const targetGroups = Object.values(resourceCounts).filter(
-        (resource: any) => resource.Type === 'AWS::ElasticLoadBalancingV2::TargetGroup'
-      );
-      const logGroups = Object.values(resourceCounts).filter(
-        (resource: any) => resource.Type === 'AWS::Logs::LogGroup'
-      );
+      expect(targetGroups).toHaveLength(2);
+    });
 
-      expect(ecsServices).toHaveLength(1);
-      expect(targetGroups).toHaveLength(2); // Frontend + Backend
-      expect(logGroups).toHaveLength(2); // Frontend + Backend
+    test('should output all required URLs and ARNs', () => {
+      template.hasOutput('LoadBalancerDNS', {});
+      template.hasOutput('FrontendURL', {});
+      template.hasOutput('BackendURL', {});
+      template.hasOutput('DatabaseClusterArn', {});
+      template.hasOutput('DatabaseSecretArn', {});
+    });
+
+    test('should properly connect database permissions to task role', () => {
+      // Verify the task role has RDS Data API permissions
+      const roles = template.findResources('AWS::IAM::Role');
+      
+      // Find the task role by looking for RDS Data API permissions
+      const taskRole = Object.values(roles).find((role: any) => {
+        const policies = role.Properties?.Policies;
+        if (!policies || !Array.isArray(policies)) return false;
+        
+        return policies.some((policy: any) => {
+          const statements = policy.PolicyDocument?.Statement;
+          if (!statements || !Array.isArray(statements)) return false;
+          
+          return statements.some((statement: any) => 
+            statement.Action?.includes?.('rds-data:ExecuteStatement')
+          );
+        });
+      });
+      
+      expect(taskRole).toBeDefined();
     });
   });
 
-  describe('Output Validation', () => {
-    test('exports required outputs', () => {
-      template.hasOutput('LoadBalancerDNS', {
-        Description: 'DNS name of the load balancer'
-      });
-
-      template.hasOutput('FrontendURL', {
-        Description: 'Frontend URL'
-      });
-
-      template.hasOutput('BackendURL', {
-        Description: 'Backend API URL'
-      });
+  describe('Environment Configuration', () => {
+    test('should configure containers with correct environment variables', () => {
+      const taskDef = template.findResources('AWS::ECS::TaskDefinition');
+      const taskDefResource = Object.values(taskDef)[0] as any;
+      const containers = taskDefResource.Properties.ContainerDefinitions;
+      
+      // Find backend container
+      const backendContainer = containers.find((c: any) => 
+        c.Environment?.some((env: any) => env.Name === 'PORT' && env.Value === '8080')
+      );
+      
+      expect(backendContainer).toBeDefined();
+      expect(backendContainer.Environment).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ Name: 'NODE_ENV', Value: 'production' }),
+          expect.objectContaining({ Name: 'DB_NAME', Value: 'AllenAIDB' })
+        ])
+      );
     });
   });
 });

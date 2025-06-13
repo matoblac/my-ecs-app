@@ -7,6 +7,8 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as wafv2 from 'aws-cdk-lib/aws-wafv2';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as rds from 'aws-cdk-lib/aws-rds';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 export class CdkStack extends Stack {
   constructor(scope: cdk.App, id: string, props?: StackProps) {
@@ -14,6 +16,7 @@ export class CdkStack extends Stack {
 
     // === 1. NETWORKING ===
     // For testing, create a VPC instead of looking up (which requires real AWS context)
+    // TODO: This is a infrastructure task btw
     let vpc: ec2.IVpc;
     
     if (this.node.tryGetContext('@aws-cdk/aws-ec2:restrictDefaultSecurityGroup') !== undefined || !props?.env?.account) {
@@ -24,17 +27,43 @@ export class CdkStack extends Stack {
       vpc = ec2.Vpc.fromLookup(this, 'DefaultVPC', { isDefault: true });
     }
     
-    // === 2. ECR REPOSITORIES ===
+    // === 2. AURORA SERVERLESS DATABASE ===
+    const dbCredentialsSecret = new secretsmanager.Secret(this, 'DBCredentialsSecret', {
+      secretName: 'AllenAIUserDBCredentials',
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'allenaiuser' }),
+        generateStringKey: 'password',
+        excludeCharacters: '"@/\\',
+      },
+    });
+
+    const dbCluster = new rds.ServerlessCluster(this, 'AllenAICluster', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({
+        version: rds.AuroraPostgresEngineVersion.VER_13_13
+      }),
+      vpc,
+      credentials: rds.Credentials.fromSecret(dbCredentialsSecret),
+      defaultDatabaseName: 'AllenAIDB',
+      scaling: {
+        autoPause: cdk.Duration.minutes(10),
+        minCapacity: rds.AuroraCapacityUnit.ACU_2,
+        maxCapacity: rds.AuroraCapacityUnit.ACU_8
+      },
+      enableDataApi: true, // Needed for Lambda or Bedrock style integrations
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    });
+    
+    // === 3. ECR REPOSITORIES ===
     const frontendRepo = ecr.Repository.fromRepositoryName(this, 'FrontendRepo', 'chatbot-frontend');
     const backendRepo = ecr.Repository.fromRepositoryName(this, 'BackendRepo', 'chatbot-backend');
 
-    // === 3. ECS CLUSTER ===
+    // === 4. ECS CLUSTER ===
     const cluster = new ecs.Cluster(this, 'ChatbotCluster', {
       vpc,
       clusterName: 'chatbot-cluster'
     });
 
-    // === 4. TASK EXECUTION ROLE ===
+    // === 5. TASK EXECUTION ROLE ===
     const taskExecutionRole = new iam.Role(this, 'TaskExecutionRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       managedPolicies: [
@@ -42,7 +71,7 @@ export class CdkStack extends Stack {
       ]
     });
 
-    // === 5. TASK ROLE (for AWS SDK calls) ===
+    // === 6. TASK ROLE (for AWS SDK calls) ===
     const taskRole = new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       inlinePolicies: {
@@ -72,11 +101,34 @@ export class CdkStack extends Stack {
               resources: ['*'] // Restrict to specific functions in production
             })
           ]
+        }),
+        RDSDataAPIPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: [
+                'rds-data:ExecuteStatement',
+                'rds-data:BatchExecuteStatement',
+                'rds-data:BeginTransaction',
+                'rds-data:CommitTransaction',
+                'rds-data:RollbackTransaction'
+              ],
+              resources: [dbCluster.clusterArn]
+            }),
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret'
+              ],
+              resources: [dbCredentialsSecret.secretArn]
+            })
+          ]
         })
       }
     });
 
-    // === 6. LOG GROUPS ===
+    // === 7. LOG GROUPS ===
     const frontendLogGroup = new logs.LogGroup(this, 'FrontendLogGroup', {
       logGroupName: '/ecs/chatbot-frontend',
       retention: logs.RetentionDays.ONE_WEEK,
@@ -89,7 +141,7 @@ export class CdkStack extends Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
-    // === 7. TASK DEFINITION ===
+    // === 8. TASK DEFINITION ===
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'ChatbotTaskDefinition', {
       memoryLimitMiB: 2048,
       cpu: 1024,
@@ -97,7 +149,7 @@ export class CdkStack extends Stack {
       taskRole: taskRole
     });
 
-    // === 8. FRONTEND CONTAINER ===
+    // === 9. FRONTEND CONTAINER ===
     const frontendContainer = taskDefinition.addContainer('FrontendContainer', {
       image: ecs.ContainerImage.fromEcrRepository(frontendRepo, 'latest'),
       memoryLimitMiB: 512,
@@ -116,7 +168,7 @@ export class CdkStack extends Stack {
       protocol: ecs.Protocol.TCP
     });
 
-    // === 9. BACKEND CONTAINER ===
+    // === 10. BACKEND CONTAINER ===
     const backendContainer = taskDefinition.addContainer('BackendContainer', {
       image: ecs.ContainerImage.fromEcrRepository(backendRepo, 'latest'),
       memoryLimitMiB: 1536,
@@ -126,7 +178,10 @@ export class CdkStack extends Stack {
       }),
       environment: {
         NODE_ENV: 'production',
-        PORT: '8080'
+        PORT: '8080',
+        DB_CLUSTER_ARN: dbCluster.clusterArn,
+        DB_SECRET_ARN: dbCredentialsSecret.secretArn,
+        DB_NAME: 'AllenAIDB'
       }
     });
 
@@ -135,7 +190,7 @@ export class CdkStack extends Stack {
       protocol: ecs.Protocol.TCP
     });
 
-    // === 10. ECS SERVICE ===
+    // === 11. ECS SERVICE ===
     const service = new ecs.FargateService(this, 'ChatbotService', {
       cluster,
       taskDefinition,
@@ -144,14 +199,14 @@ export class CdkStack extends Stack {
       serviceName: 'chatbot-service'
     });
 
-    // === 11. APPLICATION LOAD BALANCER ===
+    // === 12. APPLICATION LOAD BALANCER ===
     const alb = new elbv2.ApplicationLoadBalancer(this, 'ChatbotALB', {
       vpc,
       internetFacing: true,
       loadBalancerName: 'chatbot-alb'
     });
 
-    // === 12. TARGET GROUPS ===
+    // === 13. TARGET GROUPS ===
     // Frontend target group
     const frontendTargetGroup = new elbv2.ApplicationTargetGroup(this, 'FrontendTargetGroup', {
       port: 3000,
@@ -180,7 +235,7 @@ export class CdkStack extends Stack {
     service.attachToApplicationTargetGroup(frontendTargetGroup);
     service.attachToApplicationTargetGroup(backendTargetGroup);
 
-    // === 13. ALB LISTENERS ===
+    // === 14. ALB LISTENERS ===
     const listener = alb.addListener('Listener', {
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP
@@ -200,7 +255,7 @@ export class CdkStack extends Stack {
       action: elbv2.ListenerAction.forward([backendTargetGroup])
     });
 
-    // === 14. WAF WEB ACL ===
+    // === 15. WAF WEB ACL ===
     const webAcl = new wafv2.CfnWebACL(this, 'ChatbotWebACL', {
       scope: 'REGIONAL',
       defaultAction: { allow: {} },
@@ -263,13 +318,13 @@ export class CdkStack extends Stack {
       }
     });
 
-    // === 15. ASSOCIATE WAF WITH ALB ===
+    // === 16. ASSOCIATE WAF WITH ALB ===
     new wafv2.CfnWebACLAssociation(this, 'WebACLAssociation', {
       resourceArn: alb.loadBalancerArn,
       webAclArn: webAcl.attrArn
     });
 
-    // === 16. OUTPUTS ===
+    // === 17. OUTPUTS ===
     new cdk.CfnOutput(this, 'LoadBalancerDNS', {
       value: alb.loadBalancerDnsName,
       description: 'DNS name of the load balancer'
@@ -283,6 +338,16 @@ export class CdkStack extends Stack {
     new cdk.CfnOutput(this, 'BackendURL', {
       value: `http://${alb.loadBalancerDnsName}/api`,
       description: 'Backend API URL'
+    });
+
+    new cdk.CfnOutput(this, 'DatabaseClusterArn', {
+      value: dbCluster.clusterArn,
+      description: 'Aurora Cluster ARN'
+    });
+
+    new cdk.CfnOutput(this, 'DatabaseSecretArn', {
+      value: dbCredentialsSecret.secretArn,
+      description: 'Aurora Credentials Secret ARN'
     });
   }
 }

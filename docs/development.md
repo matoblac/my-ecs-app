@@ -26,8 +26,17 @@ npm run build
 npm start
 # or for Docker:
 # This is containerized application with both frontend and backend in the same ecs task -> same ecs task? why?(this means they can communicate via websockets)
-docker build -t my-ecs-app .
-docker run -p 3000:3000 my-ecs-app
+docker build -t my-ecs-app-frontend . # to conduct frontend development
+docker build -t my-ecs-app-backend . # to conduct backend development
+docker run -p 3001:3001 my-ecs-app-frontend # to run the frontend
+docker run -p 3000:3000 my-ecs-app-backend # to run the backend
+docker-compose up -d # to run the application
+
+# to run the full application with docker compose (frontend and backend in local development mode working together)
+docker-compose up -d
+
+# to stop the application
+docker-compose down
 ```
 
 ## Testing 

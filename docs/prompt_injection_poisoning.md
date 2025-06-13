@@ -33,7 +33,7 @@ A FULL AND THOROUGH AUDIT SHOULD BE DONE ON THE EMBEDDINGS BEFORE TRAINING A DOW
     * AllenAI must never become an unchallengeable authority. Developers should assume the user will over-trust the model over time unless clear safeguards are in place. Maybe a warning will suffice?
 
 * Embeddings are temporary, not eternal
-    * Vectors must be tagged, traceable, and deletable. Therefore why training a downstream model can be a problem without attempting to mitigate the risk with a full audit.
+    * Vectors must be tagged, traceable, and deletable. so, new requests won't be poisoned by old vectors if the vector themselves are deleted. Therefore why training a downstream model can be a problem without attempting to mitigate the risk with a full audit.
 
 * Empower humans to override AI
     * Admins must be able to review, filter, and remove vector entries without deep technical steps, we this architecure meant to allow the system admins to have full control over the application.
