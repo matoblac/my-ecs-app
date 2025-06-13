@@ -13,7 +13,8 @@ Utilizes the concept of Domain Driven Design (DDD) to organize the code.
     * [Chat](./src/domain/chat/ReadMe.md)
     * [AI](./src/domain/ai/ReadMe.md)
     * [Team](./src/domain/team/ReadMe.md)
-    * Notification
+    * [Notification](./src/domain/notification/ReadMe.md)
+    * [MCP](./src/domain/mcp/ReadMe.md)
     * Settings
 
 Each domain is a self-contained module that encapsulates the logic for a specific feature or business capability.
