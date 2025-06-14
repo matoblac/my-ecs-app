@@ -11,7 +11,9 @@ export interface ChatMessage {
     conversationId: ConversationId
     senderId: UserId
     content: string
+    role?: 'user' | 'assistant' | 'system'
     createdAt: Date
+    updatedAt?: Date
     embedding?: EmbeddingVector
 }
   
