@@ -1,16 +1,5 @@
-# MY ECS APP Backend Utils Layer
+# Allen Utils Layer
 
-## Error Handling & Logging
+This folder contains utility functions and classes that are used throughout the application.
 
-## Logging
-
-To the console. as seen in the /backend/src/utils/logger.ts file.
-```typescript
-console.log(`[INFO] ${msg}`, meta || "");
-```
-
-## Error Handling
-
-## Logging
-
-## Error Handling
+like logger, error handling, validators, etc.

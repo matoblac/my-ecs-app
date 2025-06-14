@@ -14,12 +14,14 @@ Combining a WebSocket-driven backend, a vector-enabled knowledge base, and real-
 
 ### TL;DR(What It Does)
 
+* PS I considered a diagram but, mermaid live editor is faster and easier to scale images.
+
 Copy and paste the following into [Mermaid Live Editor](https://mermaid.live/) to see the system in action:
 
 ```code
 graph TD
   A[User Message] --> B[WebSocket Gateway]
-  B --> C[Save Message in Aurora (with embedding)]
+  B --> C[Save Message in Aurora]
   C --> D[Query Vector Similarity from Aurora]
   C --> E[Fetch Recent Chat History]
   D --> F[Build Smart Context]

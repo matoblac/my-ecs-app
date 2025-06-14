@@ -15,6 +15,8 @@ The project encompasses:
 - [Frontend](../frontend/README.md)
 - [Backend](../backend/ReadMe.md)
 - [Infrastructure](../backend/src/infrastructure/ReadMe.md)
+- [interfaces](../backend/src/interfaces/ReadMe.md)
+- [utils](../backend/src/utils/ReadMe.md)
 
 ## Local Development
 

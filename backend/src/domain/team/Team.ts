@@ -6,9 +6,11 @@
 export interface Team {
     id: string;
     name: string;
-    description: string;
+    description?: string;
+    ownerId: string;
+    memberIds: string[];
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt?: Date;
 }
 
 
