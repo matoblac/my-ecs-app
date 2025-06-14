@@ -1,8 +1,6 @@
 // src/domain/user/UserService.ts
 // joining/leaving teams, etc.
 
-
-
 import { User } from './User'
 import { UserRepository } from './UserRepository'
 
