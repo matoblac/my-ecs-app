@@ -2,16 +2,22 @@
 import { AuroraDataSource } from './AuroraSource'
 import { ChatMessage } from '../../../domain/chat/ChatMessage'
 import { ChatMessageRepository } from '../../../domain/chat/ChatMessageRepository'
+import { DatabaseError } from '../../../utils/errors'
+
+  
 
 export class ChatMessageRepositoryAurora implements ChatMessageRepository {
     private tablesInitialized = false;
+    private db: AuroraDataSource;
   
-    constructor(private db: AuroraDataSource) {}
-  
-    async initializeTables(): Promise<void> {
-      if (this.tablesInitialized) return;
-  
-      await this.db.execute(`
+    constructor(db: AuroraDataSource) {
+        this.db = db
+    }
+
+    // handle database errors and log them to the console
+    initializeTables = async (): Promise<void> => {
+        try {
+            await this.db.execute(`
         CREATE TABLE IF NOT EXISTS chat_messages (
           id TEXT PRIMARY KEY,
           conversation_id TEXT NOT NULL,
@@ -22,13 +28,17 @@ export class ChatMessageRepositoryAurora implements ChatMessageRepository {
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           INDEX idx_conversation_id (conversation_id),
           INDEX idx_sender_id (sender_id)
-        )a
-      `);
-  
-      this.tablesInitialized = true;
+        )
+      `)
+        } catch (err: unknown) {
+            const error = err instanceof Error ? err : new Error(String(err))
+            console.error('DB Error', error)
+            throw new DatabaseError('Failed to initialize tables', error)
+        }
     }
   
-        async save(message: ChatMessage): Promise<void> {
+  
+    async save(message: ChatMessage): Promise<void> {
       await this.initializeTables();
 
       try {

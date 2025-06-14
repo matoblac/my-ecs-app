@@ -5,7 +5,7 @@
 import { MCPService } from '../../../../src/domain/mcp/MCPService'
 import { MCPRepository } from '../../../../src/domain/mcp/MCPRepository'
 import { MCP } from '../../../../src/domain/mcp/MCP'
-
+import { expect, jest, beforeEach, describe, it } from '@jest/globals'
 
 // Test suite for MCP Service
 describe('MCPService', () => {
