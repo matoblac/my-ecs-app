@@ -36,7 +36,7 @@ A FULL AND THOROUGH AUDIT SHOULD BE DONE ON THE EMBEDDINGS BEFORE TRAINING A DOW
     * Vectors must be tagged, traceable, and deletable. so, new requests won't be poisoned by old vectors if the vector themselves are deleted. Therefore why training a downstream model can be a problem without attempting to mitigate the risk with a full audit.
 
 * Empower humans to override AI
-    * Admins must be able to review, filter, and remove vector entries without deep technical steps, we this architecure meant to allow the system admins to have full control over the application.
+    * Admins must be able to review, filter, and remove vector entries without deep technical steps, allow the system admins to have full control over the application. This isn't a 90s movie (I think?) don't give this ai too much power. If create a job of expert reviews that can and will be paid and can get fired if they don't do their job. 
 
 ### Technical Mitigation
 
