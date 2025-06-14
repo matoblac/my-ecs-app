@@ -16,7 +16,6 @@ export class CdkStack extends Stack {
 
     // === 1. NETWORKING ===
     // For testing, create a VPC instead of looking up (which requires real AWS context)
-    // TODO: This is a infrastructure task btw -> backend/src/infrastructure/networking/VPC.ts
     let vpc: ec2.IVpc;
     
     if (this.node.tryGetContext('@aws-cdk/aws-ec2:restrictDefaultSecurityGroup') !== undefined || !props?.env?.account) {

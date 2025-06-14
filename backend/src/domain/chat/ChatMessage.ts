@@ -2,6 +2,8 @@
 import { ConversationId } from "./types";
 import { UserId } from "./ChatParticipant";
 
+// this is the chat message domain object
+
 export type ChatMessageId = string;
 
 export type EmbeddingVector = number[];

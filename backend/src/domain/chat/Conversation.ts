@@ -5,7 +5,6 @@ import { ConversationId, ConversationTitle } from "./types";
 // Purpose: Defines the structure of a conversation
 // This is a value object, so it is immutable
 // It is used to store the conversation history
-// It is used to store the conversation history
 
 
 export interface Conversation {

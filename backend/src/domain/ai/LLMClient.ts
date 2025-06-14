@@ -1,3 +1,4 @@
+//backend/src/domain/ai/LLMClient.ts
 import { logInfo, logError } from "../../utils/logger";
 
 // This is a stub for the LLMClient interface. 
