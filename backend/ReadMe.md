@@ -23,6 +23,10 @@ Each domain is a self-contained module that encapsulates the logic for a specifi
 
 ### Infrastructure Layer:
 
+* [database/aurora](./src/infrastructure/database/aurora/ReadMe.md)
+
+This folder contains database/* data source adapters and repository implementations for the Allen.ai backend.
+
 ### Interfaces Layer:
 
 ## Utils Layer
